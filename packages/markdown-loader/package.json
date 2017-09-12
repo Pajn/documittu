@@ -1,6 +1,6 @@
 {
   "name": "documittu-markdown-loader",
-  "version": "0.1.0",
+  "version": "0.2.30",
   "description": "Webpack loader to render React Components from markdown",
   "keywords": [
     "react",
@@ -9,11 +9,11 @@
     "loader",
     "markdown"
   ],
-  "homepage": "https://github.com/beanloop/documittu",
+  "homepage": "https://github.com/pajn/documittu",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/beanloop/documittu.git"
+    "url": "https://github.com/pajn/documittu.git"
   },
   "main": "src/index.js",
   "dependencies": {

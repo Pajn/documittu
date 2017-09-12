@@ -12,7 +12,11 @@ export function moduleUrl(module: Module, apiDocs: ApiDocs) {
     : join(rootUrl(apiDocs), module.outPath)
 }
 
-export function entryUrl(declaration: UntaggedDeclaration & {reexport?: Reexport}, module: Module, apiDocs: ApiDocs) {
+export function entryUrl(
+  declaration: UntaggedDeclaration & {reexport?: Reexport},
+  module: Module,
+  apiDocs: ApiDocs,
+) {
   if (declaration.reexport) {
     module = apiDocs.data.modules[declaration.reexport.path]
   }

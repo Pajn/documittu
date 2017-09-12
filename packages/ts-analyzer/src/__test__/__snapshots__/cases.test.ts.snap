@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`analyze cases should emit boolean as boolean 1`] = `
 Object {
   "declarationModule": Object {
@@ -13,50 +15,48 @@ Object {
           "id": "0",
           "kind": "Type",
           "name": "A",
-          "properties": Array [
-            Object {
-              "documentation": "",
-              "name": "a",
-              "optional": false,
-              "type": Object {
-                "id": 12,
-                "importedFrom": undefined,
-                "kind": "Named",
-                "name": "boolean",
-                "parameters": undefined,
-              },
-            },
-            Object {
-              "documentation": "",
-              "name": "b",
-              "optional": false,
-              "type": Object {
-                "kind": "Union",
-                "types": Array [
-                  Object {
-                    "id": 8,
-                    "importedFrom": undefined,
-                    "kind": "Named",
-                    "name": "string",
-                    "parameters": undefined,
-                  },
-                  Object {
-                    "kind": "Named",
-                    "name": "boolean",
-                  },
-                ],
-              },
-            },
-          ],
           "type": Object {
-            "id": 46,
-            "importedFrom": undefined,
-            "kind": "Named",
-            "name": "A",
-            "parameters": undefined,
+            "index": undefined,
+            "kind": "Object",
+            "properties": Array [
+              Object {
+                "documentation": "",
+                "name": "a",
+                "optional": false,
+                "type": Object {
+                  "id": 12,
+                  "importedFrom": undefined,
+                  "kind": "Named",
+                  "name": "boolean",
+                  "parameters": undefined,
+                },
+              },
+              Object {
+                "documentation": "",
+                "name": "b",
+                "optional": false,
+                "type": Object {
+                  "kind": "Union",
+                  "types": Array [
+                    Object {
+                      "id": 8,
+                      "importedFrom": undefined,
+                      "kind": "Named",
+                      "name": "string",
+                      "parameters": undefined,
+                    },
+                    Object {
+                      "kind": "Named",
+                      "name": "boolean",
+                    },
+                  ],
+                },
+              },
+            ],
           },
         },
       },
+      "name": "booleans",
       "outPath": "src/__test__/cases-out/booleans.js",
       "reexports": Array [],
       "srcPath": "booleans.ts",
@@ -66,7 +66,7 @@ Object {
   "outDir": "src/__test__/cases-out",
   "readmes": Object {},
   "typeDeclaration": Object {
-    "46": "0",
+    "54": "0",
   },
 }
 `;
@@ -243,7 +243,7 @@ Object {
               "name": "children",
               "optional": true,
               "type": Object {
-                "id": 152,
+                "id": 103,
                 "importedFrom": "react",
                 "kind": "Named",
                 "name": "ReactNode",
@@ -276,7 +276,7 @@ Object {
               "name": "children",
               "optional": true,
               "type": Object {
-                "id": 152,
+                "id": 103,
                 "importedFrom": "react",
                 "kind": "Named",
                 "name": "ReactNode",
@@ -298,6 +298,7 @@ Object {
           ],
         },
       },
+      "name": "components",
       "outPath": "src/__test__/cases-out/components.js",
       "reexports": Array [],
       "srcPath": "components.tsx",
@@ -307,9 +308,9 @@ Object {
   "outDir": "src/__test__/cases-out",
   "readmes": Object {},
   "typeDeclaration": Object {
-    "133": "8",
-    "153": "9",
-    "91": "7",
+    "126": "7",
+    "166": "8",
+    "184": "9",
   },
 }
 `;

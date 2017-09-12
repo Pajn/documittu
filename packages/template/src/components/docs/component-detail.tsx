@@ -3,7 +3,13 @@ import * as React from 'react'
 import {ApiDocs} from '../../lib/entities'
 import {DocBlock, ImportAs, Markdown, Property} from '../ui/docs'
 
-export const ComponentDetail = ({component, apiDocs}: {component: ComponentDeclaration, apiDocs: ApiDocs}) => {
+export const ComponentDetail = ({
+  component,
+  apiDocs,
+}: {
+  component: ComponentDeclaration
+  apiDocs: ApiDocs
+}) => {
   const requiredProps = component.properties.filter(p => !p.optional)
   const optionalProps = component.properties.filter(p => p.optional)
 
@@ -14,13 +20,18 @@ export const ComponentDetail = ({component, apiDocs}: {component: ComponentDecla
         <ImportAs declaration={component} apiDocs={apiDocs} />
         <Markdown source={component.documentation} />
       </DocBlock>
-      {requiredProps.length === 0 && optionalProps.length === 0 &&
-        <span>This component does not take any properties</span>
-      }
+      {requiredProps.length === 0 &&
+        optionalProps.length === 0 && (
+          <span>This component does not take any properties</span>
+        )}
       {requiredProps.length > 0 && <h4>Required Properties</h4>}
-      {requiredProps.map(prop => <Property key={prop.name} prop={prop} apiDocs={apiDocs} />)}
+      {requiredProps.map(prop => (
+        <Property key={prop.name} prop={prop} apiDocs={apiDocs} />
+      ))}
       {optionalProps.length > 0 && <h4>Optional Properties</h4>}
-      {optionalProps.map(prop => <Property key={prop.name} prop={prop} apiDocs={apiDocs} />)}
+      {optionalProps.map(prop => (
+        <Property key={prop.name} prop={prop} apiDocs={apiDocs} />
+      ))}
     </div>
   )
 }

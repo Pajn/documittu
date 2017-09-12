@@ -1,14 +1,13 @@
-'use strict';
+'use strict'
 
-const
-  frontMatter = require('front-matter'),
+const frontMatter = require('front-matter'),
   Prism = require('./prism'),
   Remarkable = require('remarkable'),
   escapeHtml = require('remarkable/lib/common/utils').escapeHtml,
-  md = new Remarkable();
+  md = new Remarkable()
 
 function storeVariable(code, name) {
-  return `{(store.${name} = ${code}, null)}`;
+  return `{(store.${name} = ${code}, null)}`
 }
 
 /**
@@ -20,7 +19,7 @@ function renderCodeBlock(code) {
     <div class="example">
       <div class="run">${code}</div>
     </div>
-  `;
+  `
 }
 
 /**
@@ -32,20 +31,20 @@ function renderCodeBlock(code) {
  * @returns {String}                Code block with souce and run code
  */
 function escapeCodeBlock(code, lang, langPrefix, highlight) {
-  let codeBlock = escapeHtml(code);
+  let codeBlock = escapeHtml(code)
 
   if (highlight) {
-    codeBlock = highlight(code, lang);
+    codeBlock = highlight(code, lang)
   }
 
-  const langClass = !lang ? '' : `${langPrefix}${escape(lang, true)}`;
+  const langClass = !lang ? '' : `${langPrefix}${escape(lang, true)}`
 
   codeBlock = codeBlock
     .replace(/{/g, '{"{"{')
     .replace(/}/g, '{"}"}')
     .replace(/{"{"{/g, '{"{"}')
     .replace(/(\n)/g, '{"\\n"}')
-    .replace(/class=/g, 'className=');
+    .replace(/class=/g, 'className=')
 
   return `
     <div class="example">
@@ -54,7 +53,7 @@ function escapeCodeBlock(code, lang, langPrefix, highlight) {
           ${codeBlock}
         </code></pre>
       </div>
-    </div>`;
+    </div>`
 }
 
 /**
@@ -78,72 +77,72 @@ function escapeCodeBlock(code, lang, langPrefix, highlight) {
  */
 function parseMarkdown(markdown) {
   return new Promise((resolve, reject) => {
-    let html;
+    let html
 
     const options = {
       highlight(code, lang) {
         if (Prism.languages[lang]) {
-          const language = Prism.languages[lang];
-          return Prism.highlight(code, language);
+          const language = Prism.languages[lang]
+          return Prism.highlight(code, language)
         }
         return code
       },
-      xhtmlOut: true
-    };
+      xhtmlOut: true,
+    }
 
-    md.set(options);
+    md.set(options)
     let store = {}
+    const globalCodeBlocks = []
 
     md.renderer.rules.fence_custom.store = (tokens, idx, options) => {
       // gets tags applied to fence blocks ```store
-      const codeTags = tokens[idx].params.split(/\s+/g);
+      const codeTags = tokens[idx].params.split(/\s+/g)
       const name = codeTags[codeTags.length - 1]
       store[name] = tokens[idx].content
-      return storeVariable(
-        tokens[idx].content,
-        name
-      );
-    };
+      return storeVariable(tokens[idx].content, name)
+    }
 
     md.renderer.rules.fence_custom.render = (tokens, idx, options) => {
       // gets tags applied to fence blocks ```render
-      const codeTags = tokens[idx].params.split(/\s+/g);
-      return renderCodeBlock(
-        tokens[idx].content
-      );
-    };
+      const codeTags = tokens[idx].params.split(/\s+/g)
+      return renderCodeBlock(tokens[idx].content)
+    }
 
     md.renderer.rules.fence_custom.code = (tokens, idx, options) => {
       // gets tags applied to fence blocks ```code jsx
-      const codeTags = tokens[idx].params.split(/\s+/g);
+      const codeTags = tokens[idx].params.split(/\s+/g)
       return escapeCodeBlock(
         tokens[idx].content,
         codeTags[codeTags.length - 1],
         options.langPrefix,
-        options.highlight
-      );
-    };
+        options.highlight,
+      )
+    }
     md.renderer.rules.fence_custom.stored = (tokens, idx, options) => {
       // gets tags applied to fence blocks ```stored name jsx
-      const codeTags = tokens[idx].params.split(/\s+/g);
+      const codeTags = tokens[idx].params.split(/\s+/g)
       const language = codeTags[codeTags.length - 1]
       const stored = codeTags[codeTags.length - 2]
       return escapeCodeBlock(
         store[stored],
         language,
         options.langPrefix,
-        options.highlight
-      );
-    };
-
-    try {
-      html = md.render(markdown.body);
-      resolve({ html, attributes: markdown.attributes });
-    } catch (err) {
-      return reject(err);
+        options.highlight,
+      )
+    }
+    md.renderer.rules.fence_custom.global = (tokens, idx, options) => {
+      // gets tags applied to fence blocks ```gloabl
+      globalCodeBlocks.push(tokens[idx].content)
+      return ''
     }
 
-  });
+    try {
+      html = md.render(markdown.body)
+      resolve({html, attributes: markdown.attributes, globalCodeBlocks})
+    } catch (err) {
+      return reject(err)
+    }
+  })
 }
 
 /**
@@ -154,7 +153,7 @@ function parseMarkdown(markdown) {
  * @returns {MarkdownObject}    Markdown attributes and body
  */
 function parseFrontMatter(markdown) {
-  return frontMatter(markdown);
+  return frontMatter(markdown)
 }
 
 /**
@@ -164,12 +163,12 @@ function parseFrontMatter(markdown) {
  * @returns {HTMLObject}       HTML and imports
  */
 function parse(markdown) {
-  return parseMarkdown(parseFrontMatter(markdown));
+  return parseMarkdown(parseFrontMatter(markdown))
 }
 
 module.exports = {
   renderCodeBlock,
   parse,
   parseFrontMatter,
-  parseMarkdown
-};
+  parseMarkdown,
+}

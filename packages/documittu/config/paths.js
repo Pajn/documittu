@@ -71,7 +71,7 @@ module.exports = {
   appEntry: resolveApp('docs/index'),
   appPackageJson: resolveApp('package.json'),
   appNodeModules: resolveApp('node_modules'),
-  templateHtml: resolveTemplate('src/_index.html'),
+  templateHtml: resolveTemplate('src/index.html'),
   templateTsConfig: resolveTemplate('tsconfig.json'),
   // this is empty with npm3 but node resolution searches higher anyway:
   ownNodeModules: resolveOwn('../node_modules'),

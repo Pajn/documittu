@@ -1,16 +1,15 @@
+import glamorous from 'glamorous'
+import {body2, grey, indigo, pink} from 'material-definitions'
+import AppBar from 'material-ui/AppBar'
 import * as React from 'react'
-import {ThemeProvider} from 'react-css-themr'
 import DocumentTitle from 'react-document-title'
+import {Redirect, Route} from 'react-router'
 import {HashRouter, Link} from 'react-router-dom'
-import Redirect from 'react-router/Redirect'
-import Route from 'react-router/Route'
-import {AppBar} from 'react-toolbox/lib/app_bar'
-import 'react-toolbox/lib/commons.scss'
+import {row} from 'style-definitions'
 import styled from 'styled-components'
-import {materialColors} from 'styled-material/dist/src/colors'
+import {ApiDocs, RawPages} from '../lib/entities'
 import {buildRoutes} from '../lib/routes'
 import {mobile} from '../styles'
-import {theme} from '../theme'
 import {FolderPage} from './pages/folder-page'
 import {ModuleRoutes} from './pages/module-page'
 import {SinglePage} from './pages/single-page'
@@ -19,30 +18,35 @@ import {RouterLink} from './router-link'
 const Main = styled.main`
   margin: auto;
   padding: 16px;
-  padding-top: 24px;
+  padding-top: 88px;
   max-width: 1050px;
 
-  font-family: Roboto, Arial, sans-serif;
+  font-family: Roboto, sans-serif;
 
   @media (${mobile}) {
     padding-top: 16px;
   }
 
   code {
-    background-color: ${materialColors['grey-100']};
+    background-color: ${grey[100]};
   }
 
   pre {
     padding: 12px;
     overflow: auto;
-    background-color: ${materialColors['grey-100']};
+    background-color: ${grey[100]};
 
     > code {
       background: none;
     }
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     margin-top: 0.8em;
     margin-bottom: 0.3em;
     font-weight: 400;
@@ -94,62 +98,83 @@ const Main = styled.main`
   }
 `
 
-const Nav = styled.nav`
-  display: flex;
-  height: 100%;
-`
+const Nav = glamorous.nav({
+  ...(row({horizontal: 'flex-end'}) as any),
+  height: '100%',
+})
 
-const NavLink: any = styled(Link)`
-  display: flex;
-  align-items: center;
-  margin-left: 8px;
-  padding: 16px;
+const NavLink: any = glamorous(Link)(({active}: {active: boolean}) => ({
+  ...body2,
 
-  color: white;
-  border-bottom: ${({active}: any) => active ? `2px solid ${materialColors['pink-a400']}` : `none`};
+  display: 'flex' as 'flex',
+  alignItems: 'center' as 'center',
+  marginLeft: 8,
+  padding: 16,
 
-  text-decoration: none;
+  color: 'white',
+  borderBottom: active ? `2px solid ${pink['A400']}` : `none`,
 
-  &:focus:not(:active) {
-    background-color: ${materialColors['indigo-400']};
-    outline: none;
-  }
-`
+  fontFamily: 'Roboto, sans-serif',
+  textDecoration: 'none',
 
-export const App = ({title, pages, apiDocs}) => {
+  '&:focus:not(:active)': {
+    backgroundColor: indigo[400],
+    outline: 'none',
+  },
+}))
+
+export const App = ({
+  title,
+  pages,
+  apiDocs,
+}: {
+  title: string
+  pages: RawPages
+  apiDocs: ApiDocs
+}) => {
   const routes = buildRoutes(pages, apiDocs)
 
   return (
-    <ThemeProvider theme={theme}>
-      <HashRouter>
-        <div>
-          <DocumentTitle title={title} />
-          <AppBar title={title}>
-            <Nav>
-              {routes.map(({url, title}) =>
-                title &&
-                  <RouterLink key={url} exact={url === '/'} component={NavLink} to={url}>
+    <HashRouter>
+      <div>
+        <DocumentTitle title={title} />
+        <AppBar title={title}>
+          <Nav>
+            {routes.map(
+              ({url, title}) =>
+                title && (
+                  <RouterLink
+                    key={url}
+                    exact={url === '/'}
+                    component={NavLink}
+                    to={url}
+                  >
                     {title}
                   </RouterLink>
-              )}
-            </Nav>
-          </AppBar>
-          <Main>
-            {routes.map(route =>
-              <Route key={route.url} exact={route.url === '/asd'} path={route.url} render={() =>
-                route.kind === 'folder'
-                  ? <FolderPage page={route} appTitle={title} />
-                : route.kind === 'page'
-                  ? <SinglePage page={route} appTitle={title} />
-                : route.kind === 'module'
-                  ? <ModuleRoutes page={route} appTitle={title} />
-                :
-                  <Redirect to={route.to} />
-              } />
+                ),
             )}
-          </Main>
-        </div>
-      </HashRouter>
-    </ThemeProvider>
+          </Nav>
+        </AppBar>
+        <Main>
+          {routes.map(route => (
+            <Route
+              key={route.url}
+              path={route.url}
+              render={() =>
+                route.kind === 'folder' ? (
+                  <FolderPage page={route} appTitle={title} />
+                ) : route.kind === 'page' ? (
+                  <SinglePage page={route} appTitle={title} />
+                ) : route.kind === 'module' ? (
+                  <ModuleRoutes page={route} appTitle={title} />
+                ) : (
+                  <Redirect to={route.to} />
+                )
+              }
+            />
+          ))}
+        </Main>
+      </div>
+    </HashRouter>
   )
 }

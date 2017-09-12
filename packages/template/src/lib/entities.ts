@@ -6,8 +6,16 @@ import {
   Package,
   Reexport,
   TypeDeclaration,
-  VariableDeclaration
+  VariableDeclaration,
 } from 'documittu-analyzer-ts'
+import {ReactType} from 'react'
+
+export type Attributes = {title: string; path?: string}
+export type RawPage = {
+  default: ReactType
+  attributes: Attributes
+}
+export type RawPages = {[file: string]: RawPage}
 
 export type ApiDocs = {
   data: Package
@@ -18,7 +26,7 @@ export type ApiDocs = {
 export type Page = {
   url: string
   title: string
-  attributes: any
+  attributes: Attributes
   component: React.ReactType
 }
 
@@ -43,8 +51,8 @@ export type ModulePageConfig = {
   variables: Array<VariableDeclaration & {reexport?: Reexport}>
 }
 
-export type TopLevel
-  = ({kind: 'folder'} & FolderPageConfig)
+export type TopLevel =
+  | ({kind: 'folder'} & FolderPageConfig)
   | ({kind: 'page'} & Page)
-  | ({kind: 'redirect', url: string, title: undefined, to: string})
+  | ({kind: 'redirect'; url: string; title: undefined; to: string})
   | ({kind: 'module'} & ModulePageConfig)

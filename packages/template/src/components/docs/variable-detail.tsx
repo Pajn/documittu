@@ -4,7 +4,13 @@ import {ApiDocs} from '../../lib/entities'
 import {CodeBlock, DocBlock, ImportAs, Markdown} from '../ui/docs'
 import {Type} from '../ui/types'
 
-export const VariableDetail = ({variable, apiDocs}: {variable: VariableDeclaration, apiDocs: ApiDocs}) => {
+export const VariableDetail = ({
+  variable,
+  apiDocs,
+}: {
+  variable: VariableDeclaration
+  apiDocs: ApiDocs
+}) => {
   return (
     <div>
       <h3>{variable.name}</h3>
@@ -15,7 +21,7 @@ export const VariableDetail = ({variable, apiDocs}: {variable: VariableDeclarati
       <h6>Type</h6>
       <Type type={variable.type} apiDocs={apiDocs} />
       <h6>Value</h6>
-      <CodeBlock literal={`var ${variable.name} = ${variable.value}`} />
+      <CodeBlock value={`var ${variable.name} = ${variable.value}`} />
     </div>
   )
 }

@@ -4,7 +4,13 @@ import {ApiDocs} from '../../lib/entities'
 import {DocBlock, ImportAs, Markdown} from '../ui/docs'
 import {Type, TypeParameters, joined} from '../ui/types'
 
-export const FunctionDetail = ({fn, apiDocs}: {fn: FunctionDeclaration, apiDocs: ApiDocs}) => {
+export const FunctionDetail = ({
+  fn,
+  apiDocs,
+}: {
+  fn: FunctionDeclaration
+  apiDocs: ApiDocs
+}) => {
   return (
     <div>
       <h3>{fn.name}</h3>
@@ -12,13 +18,26 @@ export const FunctionDetail = ({fn, apiDocs}: {fn: FunctionDeclaration, apiDocs:
         <ImportAs declaration={fn} apiDocs={apiDocs} />
         <Markdown source={fn.documentation} />
       </DocBlock>
-      <h6>Signature</h6>
-      <div>
-        {fn.typeParameters && <TypeParameters parameters={fn.typeParameters} apiDocs={apiDocs} />}
-        (
-        {fn.parameters.map(joined(', ', p => <span>{p.name}: <Type type={p.type} apiDocs={apiDocs} /></span>))}
-        ) => <Type type={fn.returnType} apiDocs={apiDocs} />
-      </div>
+      <h6>Signature{fn.signatures.length > 1 && 's'}</h6>
+      {fn.signatures.map((signature, i) => (
+        <div key={i}>
+          {signature.typeParameters && (
+            <TypeParameters
+              parameters={signature.typeParameters}
+              apiDocs={apiDocs}
+            />
+          )}
+          (
+          {signature.parameters.map(
+            joined(', ', p => (
+              <span>
+                {p.name}: <Type type={p.type!} apiDocs={apiDocs} />
+              </span>
+            )),
+          )}
+          ) => <Type type={signature.returnType} apiDocs={apiDocs} />
+        </div>
+      ))}
     </div>
   )
 }

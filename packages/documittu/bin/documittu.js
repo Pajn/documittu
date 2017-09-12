@@ -10,14 +10,16 @@ switch (script) {
     const result = spawn.sync(
       'node',
       [require.resolve(`../scripts/${script}`)].concat(args),
-      {stdio: 'inherit'}
+      {stdio: 'inherit'},
     )
     process.exit(result.status)
 
     break
   default:
-    console.log(`Unknown command "${script}". Supported commands are build, watch`)
-    console.log('Perhaps you need to update tscomp?')
+    console.log(
+      `Unknown command "${script}". Supported commands are build, watch`,
+    )
+    console.log('Perhaps you need to update documittu?')
 
     break
 }

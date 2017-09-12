@@ -1,21 +1,25 @@
+import glamorous from 'glamorous'
+import {indigo, pink} from 'material-definitions'
 import {Link} from 'react-router-dom'
+import {row} from 'style-definitions'
 import styled from 'styled-components'
-import {materialColors} from 'styled-material/dist/src/colors'
-import {Row} from 'styled-material/dist/src/layout'
 import {mobile} from '../../styles'
 
-export const Container = styled(Row)`
-  @media (${mobile}) {
-    flex-direction: column;
-  }
-`
+export const Container = glamorous.div([
+  row(),
+  {
+    [`@media (${mobile})`]: {
+      flexDirection: 'column',
+    },
+  },
+])
 
 export const Nav = styled.nav`
   flex-shrink: 0;
   box-sizing: border-box;
   padding-right: 8px;
   width: 190px;
-  border-right: 1px solid rgba(0, 0, 0, 0.30);
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
 
   @media (${mobile}) {
     display: flex;
@@ -23,7 +27,7 @@ export const Nav = styled.nav`
     margin-bottom: 8px;
     width: 100%;
     border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.30);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   }
 
   > div > h3 {
@@ -32,24 +36,26 @@ export const Nav = styled.nav`
   }
 `
 
-export const NavLink: any = styled(Link)`
-  display: block;
-  margin-bottom: 4px;
-  padding-top: 4px;
-  padding-left: 4px;
-  padding-bottom: 4px;
+export const NavLink = glamorous(Link, {filterProps: ['active']})(
+  ({active}: {active: boolean}) => ({
+    display: 'block' as 'block',
+    marginBottom: 4,
+    paddingTop: 4,
+    paddingLeft: 4,
+    paddingBottom: 4,
 
-  color: ${materialColors['indigo-500']};
-  border-left: 3px solid transparent;
-  font-weight: ${({active}: any) => active ? 500 : 400};
+    color: indigo[500],
+    borderLeft: `3px solid transparent`,
+    fontWeight: (active ? 500 : 400) as any,
 
-  text-decoration: none;
+    textDecoration: 'none' as 'none',
 
-  &:focus:not(:active) {
-    border-left: 3px solid ${materialColors['pink-a400']};
-    outline: none;
-  }
-`
+    '&:focus:not(:active)': {
+      borderLeft: `3px solid ${pink['A400']}`,
+      outline: 'none' as 'none',
+    },
+  }),
+)
 
 export const Content = styled.section`
   padding-left: 16px;

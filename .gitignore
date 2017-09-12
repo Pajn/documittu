@@ -1,3 +1,6 @@
-dist/
+/packages/*/cjs/
+/packages/*/lib/
+/packages/*/build/
+/packages/*/dist/
 node_modules/
 npm-debug.log
