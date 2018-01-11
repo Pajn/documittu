@@ -1,6 +1,6 @@
 {
   "name": "documittu",
-  "version": "0.2.30",
+  "version": "0.3.0",
   "description": "",
   "bin": {
     "documittu": "./bin/documittu.js"
@@ -24,8 +24,8 @@
     "chalk": "2.3.0",
     "cross-spawn": "^5.1.0",
     "css-loader": "0.28.4",
-    "documittu-markdown-loader": "^0.2.30",
-    "documittu-template-default": "^0.2.30",
+    "documittu-markdown-loader": "^0.3.0",
+    "documittu-template-default": "^0.3.0",
     "dotenv": "4.0.0",
     "extract-text-webpack-plugin": "3.0.0",
     "file-loader": "0.11.2",
