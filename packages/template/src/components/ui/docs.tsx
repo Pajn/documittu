@@ -144,9 +144,6 @@ export const Constructor = ({
           </Fragment>
         )),
       )})
-      <span>
-        : <Type type={signature.returnType} apiDocs={apiDocs} />
-      </span>
     </h5>
     {signature.documentation && (
       <DocBlock>

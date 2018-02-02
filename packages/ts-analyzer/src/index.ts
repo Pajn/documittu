@@ -251,14 +251,28 @@ export function analyze(
       )!
       const type = checker.getDeclaredTypeOfSymbol(symbol)
 
-      addTypeDeclaration(type, 'Type', serializeTypeDeclaration(symbol))
+      addTypeDeclaration(
+        type,
+        'Type',
+        serializeTypeDeclaration(
+          symbol,
+          (node as ts.TypeAliasDeclaration).typeParameters,
+        ),
+      )
     } else if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
       const symbol = checker.getSymbolAtLocation(
         (node as ts.InterfaceDeclaration).name,
       )!
-      const type = checker.getTypeOfSymbolAtLocation(symbol, node)
+      const type = checker.getDeclaredTypeOfSymbol(symbol)
 
-      addTypeDeclaration(type, 'Type', serializeTypeDeclaration(symbol))
+      addTypeDeclaration(
+        type,
+        'Type',
+        serializeTypeDeclaration(
+          symbol,
+          (node as ts.InterfaceDeclaration).typeParameters,
+        ),
+      )
     } else if (node.kind === ts.SyntaxKind.ClassDeclaration) {
       const name = (node as ts.ClassDeclaration).name
       if (!name) return
@@ -280,7 +294,7 @@ export function analyze(
         // It's not a component
         addTypeDeclaration(type, 'Class', {
           name: name.text,
-          ...serializeClass(type),
+          ...serializeClass(type, node as ts.ClassDeclaration),
           ...getDocs(symbol),
         })
       }
@@ -388,12 +402,26 @@ export function analyze(
     }
   }
 
-  function serializeClass(type: ts.Type) {
+  function serializeClass(type: ts.Type, node: ts.ClassDeclaration) {
     const constructSignature = type.getConstructSignatures()[0]
     if (!constructSignature) return
     const instanceType = constructSignature.getReturnType()
+    const implementsClause =
+      node.heritageClauses &&
+      node.heritageClauses.find(
+        c => c.token === ts.SyntaxKind.ImplementsKeyword,
+      )
 
     const extends_ = (type.getBaseTypes() || []).map(p => serializeTypeBound(p))
+    const implements_ = implementsClause
+      ? implementsClause.types
+          .map(c =>
+            checker.getDeclaredTypeOfSymbol(
+              checker.getSymbolAtLocation(c.expression)!,
+            ),
+          )
+          .map(p => serializeTypeBound(p))
+      : []
     const typeParameters =
       constructSignature.getTypeParameters() &&
       constructSignature.getTypeParameters()!.map(p => serializeTypeBound(p))
@@ -426,7 +454,7 @@ export function analyze(
 
     return {
       extends: extends_,
-      implements: [],
+      implements: implements_,
       typeParameters,
       constructors,
       properties,
@@ -668,14 +696,21 @@ export function analyze(
     return serializeNamedTypeBound(type)
   }
 
-  function serializeTypeDeclaration(symbol: ts.Symbol) {
+  function serializeTypeDeclaration(
+    symbol: ts.Symbol,
+    typeParameters: ts.NodeArray<ts.TypeParameterDeclaration> | undefined,
+  ) {
     const type = checker.getDeclaredTypeOfSymbol(symbol)
     const extends_ = (type.getBaseTypes() || []).map(p => serializeTypeBound(p))
+    const parameters =
+      typeParameters &&
+      typeParameters.map(p => serializeTypeBound(checker.getTypeAtLocation(p)))
     return {
       ...serializeSymbol(symbol, undefined, {
         prefferNamed: false /* false to avoid printing the type as just the name of that type */,
       }),
       extends: extends_,
+      parameters,
     }
   }
 
