@@ -1,6 +1,6 @@
 {
   "name": "documittu-analyzer-ts",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "Rasmus Eneman",
   "main": "./cjs/index.js",
   "typings": "./cjs/index.d.ts",

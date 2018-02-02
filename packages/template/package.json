@@ -1,6 +1,6 @@
 {
   "name": "documittu-template-default",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "",
   "main": "cjs/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "@types/webpack": "^3.0.10",
     "@types/webpack-env": "^1.13.3",
     "babel-polyfill": "^6.23.0",
-    "documittu-analyzer-ts": "^0.3.1",
+    "documittu-analyzer-ts": "^0.3.2",
     "glamor": "^2.20.40",
     "glamorous": "^4.11.2",
     "material-definitions": "^0.3.3",
