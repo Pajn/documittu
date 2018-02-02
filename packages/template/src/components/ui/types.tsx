@@ -7,14 +7,17 @@ import {entryUrl} from '../../lib/urls'
 import {importPath} from './docs'
 import {Keyword, NumberLiteral, StringLiteral, TypeName} from './syntax'
 
-export function joined<T>(delimiter: string, fn: (e: T) => ReactElement<any>) {
+export function joined<T>(
+  delimiter: string,
+  fn: (e: T, i: number) => ReactElement<any>,
+) {
   return (e: T, i: number) =>
     i === 0 ? (
-      React.cloneElement(fn(e), {key: i})
+      React.cloneElement(fn(e, i), {key: i})
     ) : (
       <span key={i}>
         {delimiter}
-        {fn(e)}
+        {fn(e, i)}
       </span>
     )
 }
@@ -40,9 +43,13 @@ export const Type = ({
   type,
   apiDocs,
 }: {
-  type: TypeBound
+  type?: TypeBound
   apiDocs: ApiDocs
 }): React.ReactElement<any> => {
+  if (type === undefined) {
+    return <TypeName style={{cursor: 'default'}}>any</TypeName>
+  }
+
   switch (type.kind) {
     case 'Named':
       return (

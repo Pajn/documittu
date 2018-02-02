@@ -4,5 +4,8 @@
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
   "prettier.bracketSpacing": false,
-  "prettier.semi": false
+  "prettier.semi": false,
+
+  "typescript.tsserver.log": "verbose",
+  "typescript.tsserver.trace": "verbose"
 }

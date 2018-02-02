@@ -1,5 +1,7 @@
 import {
   DocEntry,
+  Function,
+  FunctionSignature,
   Module,
   Reexport,
   TypeProperty,
@@ -7,7 +9,7 @@ import {
 } from 'documittu-analyzer-ts'
 import {indigo} from 'material-definitions'
 import {join} from 'path'
-import * as React from 'react'
+import React, {Fragment} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {PrismCode} from 'react-prism'
 import {Link} from 'react-router-dom'
@@ -15,7 +17,7 @@ import styled from 'styled-components'
 import {ApiDocs} from '../../lib/entities'
 import {entryUrl, moduleUrl} from '../../lib/urls'
 import {Keyword, PropertyName, StringLiteral} from './syntax'
-import {Type} from './types'
+import {Type, TypeParameters, joined} from './types'
 
 export const DocListItem = ({
   item,
@@ -98,7 +100,7 @@ export const DocBlock = styled.div`
 
 export const Property = ({
   prop,
-  showOptional,
+  showOptional = true,
   apiDocs,
 }: {
   prop: TypeProperty | DocEntry
@@ -120,6 +122,78 @@ export const Property = ({
         <Markdown source={prop.documentation} />
       </DocBlock>
     )}
+  </div>
+)
+
+export const Constructor = ({
+  signature,
+  apiDocs,
+}: {
+  signature: FunctionSignature
+  apiDocs: ApiDocs
+}) => (
+  <div style={{paddingTop: 4, paddingBottom: 4}}>
+    <h5>
+      <Keyword>constructor</Keyword>
+      ({signature.parameters.filter(parameter => !parameter.internal).map(
+        joined(', ', parameter => (
+          <Fragment key={parameter.name}>
+            <span>{parameter.name}</span>
+            {parameter.optional && !parameter.defaultValue && '?'}
+            : <Type type={parameter.type} apiDocs={apiDocs} />
+          </Fragment>
+        )),
+      )})
+      <span>
+        : <Type type={signature.returnType} apiDocs={apiDocs} />
+      </span>
+    </h5>
+    {signature.documentation && (
+      <DocBlock>
+        <Markdown source={signature.documentation} />
+      </DocBlock>
+    )}
+  </div>
+)
+
+export const Method = ({
+  method,
+  apiDocs,
+}: {
+  method: Function
+  apiDocs: ApiDocs
+}) => (
+  <div>
+    {method.signatures.map((signature, i) => (
+      <div key={i} style={{paddingTop: 4, paddingBottom: 4}}>
+        <h5>
+          <PropertyName>{method.name}</PropertyName>
+          {signature.typeParameters && (
+            <TypeParameters
+              parameters={signature.typeParameters}
+              apiDocs={apiDocs}
+            />
+          )}
+          ({signature.parameters.filter(parameter => !parameter.internal).map(
+            joined(', ', parameter => (
+              <Fragment key={parameter.name}>
+                <span>{parameter.name}</span>
+                {parameter.optional && !parameter.defaultValue && '?'}
+                : <Type type={parameter.type} apiDocs={apiDocs} />
+              </Fragment>
+            )),
+          )})
+          <span>
+            : <Type type={signature.returnType} apiDocs={apiDocs} />
+          </span>
+        </h5>
+        {signature.documentation && (
+          <DocBlock>
+            <Markdown source={signature.documentation} />
+          </DocBlock>
+        )}
+      </div>
+    ))}
   </div>
 )
 

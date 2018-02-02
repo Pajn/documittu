@@ -1,4 +1,5 @@
 node_modules/
 tsconfig.json
 npm-debug.log
+lerna-debug.log
 yarn.lock

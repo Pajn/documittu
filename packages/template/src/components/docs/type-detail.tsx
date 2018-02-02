@@ -2,7 +2,8 @@ import {ObjectTypeBound, TypeDeclaration} from 'documittu-analyzer-ts'
 import * as React from 'react'
 import {ApiDocs} from '../../lib/entities'
 import {DocBlock, ImportAs, Markdown, Property} from '../ui/docs'
-import {Type} from '../ui/types'
+import {Keyword} from '../ui/syntax'
+import {Type, TypeParameters, joined} from '../ui/types'
 
 export const TypeDetail = ({
   type,
@@ -14,9 +15,24 @@ export const TypeDetail = ({
   const type_ = type.type
   return (
     <div>
-      <h3>{type.name}</h3>
+      <h3>
+        {type.name}
+        {type.parameters && (
+          <TypeParameters parameters={type.parameters} apiDocs={apiDocs} />
+        )}
+      </h3>
       <DocBlock>
         <ImportAs declaration={type} apiDocs={apiDocs} />
+        {type.extends.length > 0 && (
+          <div>
+            <Keyword>extends</Keyword>{' '}
+            {type.extends.map(
+              joined(', ', (type, i) => (
+                <Type key={i} type={type} apiDocs={apiDocs} />
+              )),
+            )}
+          </div>
+        )}
         <Markdown source={type.documentation} />
       </DocBlock>
       {type_.kind === 'Object' ? (

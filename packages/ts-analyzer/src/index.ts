@@ -37,12 +37,21 @@ export type DocEntry = {
   internal?: boolean
 }
 
-export type FunctionDocEntry = DocEntry & {
+export type ClassMember = {
+  private?: boolean
+  protected?: boolean
+  static?: boolean
+  abstract?: boolean
+}
+
+export type Function = {
   name: string
   signatures: Array<FunctionSignature>
 }
 
-export type FunctionSignature = {
+export type Method = Function & ClassMember
+
+export type FunctionSignature = DocEntry & {
   typeParameters?: Array<TypeBound>
   parameters: Array<TypeProperty>
   returnType: TypeBound
@@ -58,6 +67,7 @@ export type BaseDeclaration = DocEntry & {
 export type TypeDeclaration = BaseDeclaration & {
   type: TypeBound
   parameters?: Array<TypeBound>
+  extends: Array<TypeBound>
   // properties: Array<TypeProperty>
 }
 
@@ -71,12 +81,15 @@ export type ComponentDeclaration = BaseDeclaration & {
 }
 
 export type ClassDeclaration = BaseDeclaration & {
-  properties: Array<DocEntry>
-  constructors: Array<{parameters: Array<TypeProperty>} & DocEntry>
-  methods: Array<FunctionDocEntry>
+  extends: Array<TypeBound>
+  implements: Array<TypeBound>
+  typeParameters?: Array<TypeBound>
+  properties: Array<ClassMember & TypeProperty>
+  constructors: Array<FunctionSignature>
+  methods: Array<Method>
 }
 
-export type FunctionDeclaration = BaseDeclaration & FunctionDocEntry
+export type FunctionDeclaration = BaseDeclaration & Function
 
 export type VariableDeclaration = BaseDeclaration & {
   type: TypeBound
@@ -135,8 +148,6 @@ export function analyze(
   },
 ) {
   let compilerHost = ts.createCompilerHost(options)
-  console.error('options', options)
-  console.error('fileNames', fileNames)
   let program = ts.createProgram(fileNames, options, compilerHost)
   let checker = program.getTypeChecker()
   let nextDeclarationId = 0
@@ -158,9 +169,6 @@ export function analyze(
     }
     const srcPath = relative(packagePath, sourceFile.fileName)
     const outPath = outputPath(sourceFile.fileName)
-    console.error('sourceFile.fileName', sourceFile.fileName)
-    console.error('srcPath', srcPath)
-    console.error('outPath', outPath)
     analyzeResult.modules[outPath] = {
       name: basename(outPath, '.js'),
       srcPath,
@@ -369,7 +377,7 @@ export function analyze(
   }
 
   function getDocs(
-    symbol: ts.Symbol,
+    symbol: ts.Symbol | ts.Signature,
   ): {documentation: string; internal: boolean} {
     const tags = symbol.getJsDocTags()
     return {
@@ -385,26 +393,56 @@ export function analyze(
     if (!constructSignature) return
     const instanceType = constructSignature.getReturnType()
 
-    const properties = [] as Array<DocEntry>
-    const methods = [] as Array<FunctionDocEntry>
+    const extends_ = (type.getBaseTypes() || []).map(p => serializeTypeBound(p))
+    const typeParameters =
+      constructSignature.getTypeParameters() &&
+      constructSignature.getTypeParameters()!.map(p => serializeTypeBound(p))
+    const constructors = type.getConstructSignatures().map(serializeSignature)
+
+    const properties = [] as ClassDeclaration['properties']
+    const methods = [] as Array<Method>
 
     instanceType.getProperties().forEach(p => {
       const type = checker.getTypeOfSymbolAtLocation(p, p.valueDeclaration!)
+      const flags = p.valueDeclaration
+        ? ts.getCombinedModifierFlags(p.valueDeclaration)
+        : 0
+      const memberProps = {
+        private: (flags & ts.ModifierFlags.Private) > 0,
+        protected: (flags & ts.ModifierFlags.Protected) > 0,
+        static: (flags & ts.ModifierFlags.Static) > 0,
+        abstract: (flags & ts.ModifierFlags.Abstract) > 0,
+      }
       if (isFunctionType(type)) {
         methods.push({
           name: p.getName(),
           ...serializeFunction(type),
-          ...getDocs(p),
+          ...memberProps,
         })
       } else {
-        properties.push(serializeSymbol(p))
+        properties.push({...serializeTypeProperty(p), ...memberProps})
       }
     })
 
     return {
-      constructors: [],
+      extends: extends_,
+      implements: [],
+      typeParameters,
+      constructors,
       properties,
       methods,
+    }
+  }
+
+  function serializeSignature(signature: ts.Signature) {
+    const typeParameters = signature.getTypeParameters()
+
+    return {
+      typeParameters:
+        typeParameters && typeParameters.map(p => serializeTypeBound(p)),
+      parameters: signature.getParameters().map(serializeTypeProperty),
+      returnType: serializeTypeBound(signature.getReturnType()),
+      ...getDocs(signature),
     }
   }
 
@@ -412,21 +450,11 @@ export function analyze(
     const callSignatures = type.getCallSignatures()
 
     return {
-      signatures: callSignatures.map(callSignature => {
-        const typeParameters = callSignature.getTypeParameters()
-
-        return {
-          typeParameters:
-            typeParameters && typeParameters.map(p => serializeTypeBound(p)),
-          parameters: callSignature.getParameters().map(serializeTypeProperty),
-          returnType: serializeTypeBound(callSignature.getReturnType()),
-        }
-      }),
+      signatures: callSignatures.map(serializeSignature),
     }
   }
 
   function serializeType(type: ts.Type): Array<TypeProperty> {
-    // console.error('serializeType', type['id'])
     if (type['types']) {
       return serializeInsersectionType(type as ts.UnionOrIntersectionType)
     }
@@ -469,10 +497,11 @@ export function analyze(
     }
   }
 
-  function serializeTypeProperty(symbol: ts.Symbol) {
-    const property = serializeSymbol(symbol) as TypeProperty
-    property.optional = !!(symbol.flags & ts.SymbolFlags.Optional)
-    return property
+  function serializeTypeProperty(symbol: ts.Symbol): TypeProperty {
+    return {
+      ...serializeSymbol(symbol),
+      optional: !!(symbol.flags & ts.SymbolFlags.Optional),
+    }
   }
 
   function serializeNamedTypeBound(type: ts.Type): TypeBound {
@@ -640,9 +669,14 @@ export function analyze(
   }
 
   function serializeTypeDeclaration(symbol: ts.Symbol) {
-    return serializeSymbol(symbol, undefined, {
-      prefferNamed: false /* false to avoid printing the type as just the name of that type */,
-    })
+    const type = checker.getDeclaredTypeOfSymbol(symbol)
+    const extends_ = (type.getBaseTypes() || []).map(p => serializeTypeBound(p))
+    return {
+      ...serializeSymbol(symbol, undefined, {
+        prefferNamed: false /* false to avoid printing the type as just the name of that type */,
+      }),
+      extends: extends_,
+    }
   }
 
   /** True if this is visible outside this file, false otherwise */

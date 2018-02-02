@@ -1,14 +1,11 @@
 {
   "private": true,
   "devDependencies": {
-    "lerna": "^2.4.0",
-    "prettier": "^1.7.4",
+    "lerna": "^2.8.0",
+    "prettier": "^1.10.2",
     "tslint": "^5.8.0",
     "tslint-config-pajn": "^1.0.0",
-    "typescript": "2.7.0-dev.20180111"
-  },
-  "resolutions": {
-    "typescript": "2.7.0-dev.20180111"
+    "typescript": "2.7.1"
   },
   "scripts": {
     "format":
