@@ -11,7 +11,10 @@ import {
 import {defaultTitle, moduleUrl, rootUrl} from './urls'
 
 function slug(a: string) {
-  return a.replace(/[^a-zA-Z0-9-]/g, '-').replace(/--/g, '-')
+  return a
+    .replace(/[^a-zA-Z0-9-]/g, '-')
+    .replace(/--/g, '-')
+    .toLowerCase()
 }
 
 export function createUrl(attributes: Attributes, path: string) {

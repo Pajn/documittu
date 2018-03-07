@@ -54,5 +54,10 @@ export type ModulePageConfig = {
 export type TopLevel =
   | ({kind: 'folder'} & FolderPageConfig)
   | ({kind: 'page'} & Page)
-  | ({kind: 'redirect'; url: string; title: undefined; to: string})
+  | ({
+      kind: 'redirect'
+      url: string
+      title: undefined
+      to: string
+    })
   | ({kind: 'module'} & ModulePageConfig)
