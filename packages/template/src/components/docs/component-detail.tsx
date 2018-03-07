@@ -1,7 +1,7 @@
 import {ComponentDeclaration} from 'documittu-analyzer-ts'
 import * as React from 'react'
 import {ApiDocs} from '../../lib/entities'
-import {DocBlock, ImportAs, Markdown, Property} from '../ui/docs'
+import {DocBlock, Documentation, ImportAs, Markdown, Property} from '../ui/docs'
 
 export const ComponentDetail = ({
   component,
@@ -14,7 +14,7 @@ export const ComponentDetail = ({
   const optionalProps = component.properties.filter(p => p.optional)
 
   return (
-    <div>
+    <Documentation>
       <h3>{component.name}</h3>
       <DocBlock>
         <ImportAs declaration={component} apiDocs={apiDocs} />
@@ -32,6 +32,6 @@ export const ComponentDetail = ({
       {optionalProps.map(prop => (
         <Property key={prop.name} prop={prop} apiDocs={apiDocs} />
       ))}
-    </div>
+    </Documentation>
   )
 }

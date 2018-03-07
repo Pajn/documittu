@@ -1,7 +1,7 @@
 import {FunctionDeclaration} from 'documittu-analyzer-ts'
 import * as React from 'react'
 import {ApiDocs} from '../../lib/entities'
-import {DocBlock, ImportAs, Markdown} from '../ui/docs'
+import {DocBlock, Documentation, ImportAs, Markdown} from '../ui/docs'
 import {Type, TypeParameters, joined} from '../ui/types'
 
 export const FunctionDetail = ({
@@ -12,7 +12,7 @@ export const FunctionDetail = ({
   apiDocs: ApiDocs
 }) => {
   return (
-    <div>
+    <Documentation>
       <h3>{fn.name}</h3>
       <DocBlock>
         <ImportAs declaration={fn} apiDocs={apiDocs} />
@@ -38,6 +38,6 @@ export const FunctionDetail = ({
           ) => <Type type={signature.returnType} apiDocs={apiDocs} />
         </div>
       ))}
-    </div>
+    </Documentation>
   )
 }

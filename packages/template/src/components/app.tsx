@@ -1,9 +1,9 @@
 import glamorous from 'glamorous'
-import {body2, grey, indigo, pink} from 'material-definitions'
+import {body2, indigo, pink} from 'material-definitions'
 import AppBar from 'material-ui/AppBar'
 import * as React from 'react'
 import DocumentTitle from 'react-document-title'
-import {Redirect, Route} from 'react-router'
+import {Redirect, Route, Switch} from 'react-router'
 import {HashRouter, Link} from 'react-router-dom'
 import {row} from 'style-definitions'
 import styled from 'styled-components'
@@ -14,6 +14,7 @@ import {FolderPage} from './pages/folder-page'
 import {ModuleRoutes} from './pages/module-page'
 import {SinglePage} from './pages/single-page'
 import {RouterLink} from './router-link'
+import {documentationStyle} from './ui/docs'
 
 const Main = styled.main`
   margin: auto;
@@ -27,75 +28,7 @@ const Main = styled.main`
     padding-top: 16px;
   }
 
-  code {
-    background-color: ${grey[100]};
-  }
-
-  pre {
-    padding: 12px;
-    overflow: auto;
-    background-color: ${grey[100]};
-
-    > code {
-      background: none;
-    }
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin-top: 0.8em;
-    margin-bottom: 0.3em;
-    font-weight: 400;
-
-    &:first-child {
-      margin-top: 8px;
-    }
-  }
-  h1 {
-    font-size: 45px;
-  }
-  h2 {
-    font-size: 34px;
-  }
-  h3 {
-    font-size: 24px;
-  }
-  h4 {
-    font-size: 20px;
-    font-weight: 500;
-  }
-  h5 {
-    font-size: 16px;
-  }
-  h6 {
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  ul {
-    padding-left: 32px;
-
-    > li {
-      padding-top: 8px;
-
-      > p {
-        display: inline;
-      }
-    }
-  }
-
-  p {
-    max-width: 600px;
-    overflow: auto;
-  }
-
-  strong {
-    font-weight: 500;
-  }
+  .markdown-page {${documentationStyle}}
 `
 
 const Nav = glamorous.nav({
@@ -156,23 +89,26 @@ export const App = ({
           </Nav>
         </AppBar>
         <Main>
-          {routes.map(route => (
-            <Route
-              key={route.url}
-              path={route.url}
-              render={() =>
-                route.kind === 'folder' ? (
-                  <FolderPage page={route} appTitle={title} />
-                ) : route.kind === 'page' ? (
-                  <SinglePage page={route} appTitle={title} />
-                ) : route.kind === 'module' ? (
-                  <ModuleRoutes page={route} appTitle={title} />
-                ) : (
-                  <Redirect to={route.to} />
-                )
-              }
-            />
-          ))}
+          <Switch>
+            {routes.map(route => (
+              <Route
+                key={route.url}
+                path={route.url}
+                exact={route.kind === 'redirect'}
+                render={() =>
+                  route.kind === 'folder' ? (
+                    <FolderPage page={route} appTitle={title} />
+                  ) : route.kind === 'page' ? (
+                    <SinglePage page={route} appTitle={title} />
+                  ) : route.kind === 'module' ? (
+                    <ModuleRoutes page={route} appTitle={title} />
+                  ) : (
+                    <Redirect to={route.to} />
+                  )
+                }
+              />
+            ))}
+          </Switch>
         </Main>
       </div>
     </HashRouter>

@@ -35,13 +35,6 @@ export function start({title, pages, apiDocs}: Options) {
   if (window.document) {
     renderApp(App)
   }
-
-  if (module.hot) {
-    module.hot.accept('./components/app', () => {
-      const UpdatedApp = require('./components/app').App
-      setTimeout(() => renderApp(UpdatedApp))
-    })
-  }
 }
 
 document.addEventListener('mouseup', event => {

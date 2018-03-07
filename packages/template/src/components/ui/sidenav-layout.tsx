@@ -32,6 +32,7 @@ export const Nav = styled.nav`
 
   > div > h3 {
     font-size: 16px;
+    font-weight: 400;
     line-height: 1.3;
   }
 `

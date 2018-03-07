@@ -14,7 +14,13 @@ import * as React from 'react'
 import {Link} from 'react-router-dom'
 import {row} from 'style-definitions'
 import {ModulePageConfig} from '../../lib/entities'
-import {DocBlock, DocListItem, EntryLink, Markdown} from '../ui/docs'
+import {
+  DocBlock,
+  DocListItem,
+  Documentation,
+  EntryLink,
+  Markdown,
+} from '../ui/docs'
 import {Type, TypeParameters, joined} from '../ui/types'
 
 const CategoryHeader = glamorous.h3({'#app &': {marginTop: 24}})
@@ -26,7 +32,7 @@ export const ModuleDetail = ({
   module: Module
   page: ModulePageConfig
 }) => (
-  <div>
+  <Documentation>
     {basename(module.outPath) === 'index.js' &&
     page.apiDocs.data.readmes[dirname(module.outPath)] ? (
       <Markdown source={page.apiDocs.data.readmes[dirname(module.outPath)]} />
@@ -90,7 +96,7 @@ export const ModuleDetail = ({
         ))}
       </div>
     )}
-  </div>
+  </Documentation>
 )
 
 const ModuleListItem = ({page}: {page: ModulePageConfig}) => {

@@ -7,17 +7,92 @@ import {
   TypeProperty,
   UntaggedDeclaration,
 } from 'documittu-analyzer-ts'
-import {indigo} from 'material-definitions'
+import {grey, indigo} from 'material-definitions'
 import {join} from 'path'
 import React, {Fragment} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {PrismCode} from 'react-prism'
 import {Link} from 'react-router-dom'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {ApiDocs} from '../../lib/entities'
 import {entryUrl, moduleUrl} from '../../lib/urls'
 import {Keyword, PropertyName, StringLiteral} from './syntax'
 import {Type, TypeParameters, joined} from './types'
+
+export const documentationStyle = css`
+  code {
+    background-color: ${grey[100]};
+  }
+
+  pre {
+    padding: 12px;
+    overflow: auto;
+    background-color: ${grey[100]};
+
+    > code {
+      background: none;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+    font-weight: 400;
+
+    &:first-child {
+      margin-top: 8px;
+    }
+  }
+  h1 {
+    font-size: 45px;
+  }
+  h2 {
+    font-size: 34px;
+  }
+  h3 {
+    font-size: 24px;
+  }
+  h4 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  h5 {
+    font-size: 16px;
+  }
+  h6 {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  ul {
+    padding-left: 32px;
+
+    > li {
+      padding-top: 8px;
+
+      > p {
+        display: inline;
+      }
+    }
+  }
+
+  p {
+    max-width: 600px;
+    overflow: auto;
+  }
+
+  strong {
+    font-weight: 500;
+  }
+`
+export const Documentation = styled.div`
+  ${documentationStyle};
+`
 
 export const DocListItem = ({
   item,
@@ -70,9 +145,9 @@ export const CodeBlock = ({
 )
 
 export const Markdown = ({style, ...props}: any) => (
-  <div style={style || {paddingTop: 8}} className="markdown">
+  <Documentation style={style || {paddingTop: 8}} className="markdown">
     <ReactMarkdown renderers={{code: CodeBlock}} {...props} />
-  </div>
+  </Documentation>
 )
 
 export const DocBlock = styled.div`

@@ -4,6 +4,7 @@ import {ApiDocs} from '../../lib/entities'
 import {
   Constructor,
   DocBlock,
+  Documentation,
   ImportAs,
   Markdown,
   Method,
@@ -26,7 +27,7 @@ export const ClassDetail = ({
   apiDocs: ApiDocs
 }) => {
   return (
-    <div>
+    <Documentation>
       <h3>
         {type.name}
         {type.typeParameters && (
@@ -81,6 +82,6 @@ export const ClassDetail = ({
           ))}
         </>
       )}
-    </div>
+    </Documentation>
   )
 }
