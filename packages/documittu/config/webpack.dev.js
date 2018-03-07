@@ -22,6 +22,15 @@ var publicUrl = ''
 // Get environment variables to inject into our app.
 var env = getClientEnvironment(publicUrl)
 
+const typescript = (() => {
+  try {
+    require(path.join(paths.appNodeModules, 'typescript'))
+    return path.join(paths.appNodeModules, 'typescript')
+  } catch (_) {
+    return 'typescript'
+  }
+})()
+
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
@@ -154,6 +163,7 @@ module.exports = {
               {
                 loader: require.resolve('ts-loader'),
                 options: {
+                  compiler: typescript,
                   compilerOptions: {
                     declaration: false,
                   },
