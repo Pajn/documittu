@@ -72,7 +72,7 @@ function startWebpack() {
         proxyConfig,
         urls.lanUrlForConfig,
       )
-      console.log('serverConfig', serverConfig.watchOptions)
+      serverConfig.watchOptions = undefined
       const devServer = new WebpackDevServer(compiler, serverConfig)
       // Launch WebpackDevServer.
       devServer.listen(port, HOST, err => {
