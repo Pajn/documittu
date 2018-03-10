@@ -153,6 +153,8 @@ export function analyze(
   let nextDeclarationId = 0
   const declarationId = () => (nextDeclarationId++).toString()
   let starExports = [] as Array<{module: string; from: string}>
+  // Overloads
+  const allCollectedFunctions = new Map<string, Set<number>>()
 
   function outputPath(srcPath: string) {
     const relativeSrcPath = relative(join(packagePath, 'src'), srcPath)
@@ -176,6 +178,7 @@ export function analyze(
       declarations: {},
       reexports: [],
     }
+    allCollectedFunctions.set(outPath, new Set())
 
     ts.forEachChild(sourceFile, visit)
   }
@@ -220,6 +223,7 @@ export function analyze(
 
     const outPath = outputPath(node.getSourceFile().fileName)
     const module = analyzeResult.modules[outPath]
+    const collectedFunctions = allCollectedFunctions.get(outPath)!
 
     function addDeclaration(
       id: string,
@@ -309,11 +313,14 @@ export function analyze(
         symbol.valueDeclaration,
       )
 
-      addDeclaration(declarationId(), 'Function', {
-        name: fn.name.text,
-        ...serializeFunction(type),
-        ...getDocs(symbol),
-      })
+      if (!collectedFunctions.has(type['id'])) {
+        collectedFunctions.add(type['id'])
+        addDeclaration(declarationId(), 'Function', {
+          name: fn.name.text,
+          ...serializeFunction(type),
+          ...getDocs(symbol),
+        })
+      }
     } else if (node.kind === ts.SyntaxKind.VariableStatement) {
       ;(node as ts.VariableStatement).declarationList.declarations.forEach(
         d => {
